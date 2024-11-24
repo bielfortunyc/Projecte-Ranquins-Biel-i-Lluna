@@ -6,7 +6,7 @@ from pathlib import Path
 
 def pantalla_elements():
     
-    st.title(st.session_state.nom_ranking)
+    st.title(st.session_state.nom_ranquing)
     st.header(":red[Llista d'elements:]")
     st.dataframe(st.session_state.df)
     
@@ -52,8 +52,6 @@ def pantalla_elements():
             st.rerun()
             
             
-    if st.button("Afegir metriques"):
-        st.session_state.page ="metriques"
         
     row_to_delete = st.selectbox(
         "Esborrar un element:",
@@ -63,17 +61,22 @@ def pantalla_elements():
         # Botó per esborrar la columna seleccionada
     if st.button("Esborrar element"):
         st.session_state.df = st.session_state.df[st.session_state.df["elements"] != row_to_delete]
+        st.session_state.df = st.session_state.df.reset_index(drop=True)
         st.rerun()
         
-    st.subheader(":blue[Canviar nom ranking]")
-    with st.form("nomranking"):
+    st.subheader(":blue[Canviar nom ranquing]")
+    with st.form("nomranquing"):
         # Generar inputs dinàmicament segons les columnes del DataFrame
-        inp = st.text_input("Nom del ranking")
+        inp = st.text_input("Nom del ranquing")
         sub = st.form_submit_button("Canvia")
 
         if sub:     
-            st.session_state.nom_ranking = inp
+            st.session_state.nom_ranquing = inp
             st.rerun()
+    
+    if st.button("Afegir metriques",type="primary"):
+        st.session_state.page ="metriques"
+    
     
     if st.button("Reinicia ranquing"):
         st.session_state.page = "inici"
@@ -81,15 +84,20 @@ def pantalla_elements():
 def pantalla_metriques():
         
             # Mostra el dataframe actual
-            st.title(st.session_state.nom_ranking)
+            st.title(st.session_state.nom_ranquing)
             st.header(":red[Taula actual:]")
             st.dataframe(st.session_state.df)
             st.session_state.new_col_values = [5] * len(st.session_state.df)
+            
             # Introdueix el nom de la nova columna
             st.session_state.new_col_name = st.text_input(
                 "Afegir la columna:",
                 value=st.session_state.new_col_name
             )
+            
+            # EDITAR ELEMENTS
+            if st.button("Editar elements"):
+                st.session_state.page ="elements"
 
             # AFEGIR COLUMNA
             # Si s'ha proporcionat el nom, crea sliders per a cada fila
@@ -123,25 +131,30 @@ def pantalla_metriques():
                     st.session_state.editing_column = True
                     st.rerun()
             else:  
-                st.write(f"Defineix els valors per a la nova columna: {st.session_state.new_col_name}")
+                st.write(f"Defineix els nous valors per a la columna: {st.session_state.new_col_name}")
                 #st.session_state.new_col_values = st.session_state.df[st.session_state.column_to_edit]
-                print(st.session_state.column_to_edit)
-                print(st.session_state.column_to_edit[0])
-                
+               
                 values_prev = st.session_state.df[st.session_state.column_to_edit]
-                print(values_prev)
-                print(st.session_state.new_col_values)
-                print(values_prev[0])
+                
                 for idx, row in st.session_state.df.iterrows():
-                    #st.session_state.new_col_values = [5] * len(st.session_state.df)
-                    st.session_state.new_col_values[idx] = st.slider(
-                        label=f"Valor per a {row['elements']}",
-                        min_value=0,
-                        max_value=10,
-                        step=1,
-                        value=int(values_prev[idx]),
-                        key=f"slidere_{idx}"
-                    )
+                    try:
+                        st.session_state.new_col_values[idx] = st.slider(
+                            label=f"Valor per a {row['elements']}",
+                            min_value=0,
+                            max_value=10,
+                            step=1,
+                            value=int(values_prev[idx]),
+                            key=f"slidere_{idx}"
+                        )
+                    except:
+                            st.session_state.new_col_values[idx] = st.slider(
+                            label=f"Valor per a {row['elements']}",
+                            min_value=0,
+                            max_value=10,
+                            step=1,
+                            value=5,
+                            key=f"slidere_{idx}"
+                        )
                 if st.button("Editar columna"):
                     st.session_state.df[st.session_state.column_to_edit] = st.session_state.new_col_values
                     st.success(f"Columna '{st.session_state.column_to_edit}' editada amb èxit!")
@@ -155,7 +168,7 @@ def pantalla_metriques():
             )
 
             # Botó per esborrar la columna seleccionada
-            if st.button("Esborrar"):
+            if st.button("Esborrar columna"):
                     st.session_state.df.drop(columns=[column_to_delete], inplace=True)
                     st.success(f"La columna '{column_to_delete}' s'ha esborrat correctament!")
                     st.rerun()
@@ -166,8 +179,11 @@ def pantalla_metriques():
                 # Mostra el vector actual
                 st.header(":blue[Pesos:]")
                 for i in range(1,len(st.session_state.pesos)):
-                    if st.session_state.df.keys()[i] == "Posicio ranquing" or st.session_state.df.keys()[i]  == "Puntuacio": continue
-                    st.write(st.session_state.df.keys()[i], ":", st.session_state.pesos[i])
+                    try:
+                        if st.session_state.df.keys()[i] == "Posicio ranquing" or st.session_state.df.keys()[i]  == "Puntuacio": continue
+                        st.write(st.session_state.df.keys()[i], ":", st.session_state.pesos[i])
+                    except:
+                        continue
 
                 # Botó per començar a editar
                 if st.button("Editar pesos"):
@@ -202,12 +218,11 @@ def pantalla_metriques():
                     st.session_state.editing_pesos = False
                     st.session_state.pesos = st.session_state.newpesos
                     st.rerun()
-            # EDITAR ELEMENTS
-            if st.button("Editar elements"):
-                st.session_state.page ="elements"
 
-            if st.button("Calcular ranquing"):
-                st.header(":red[Puntuacions]")
+
+            # CALCULAR RANQUINGS
+            if st.button("Calcular ranquing",type="primary"):
+                # st.header(":red[Puntuacions]") # mostrar puntuacions juntament amb ranquing o no
                 r = {}
                 for i, row in st.session_state.df.iterrows():
                     v = 0
@@ -215,14 +230,14 @@ def pantalla_metriques():
                         if k == 0 or j == "Posicio ranquing" or j == "Puntuacio": continue
                         v += st.session_state.pesos[k]*row[j]
                     r[st.session_state.df['elements'][i]] = v
-                    st.subheader(f"{st.session_state.df['elements'][i]} : {v}",divider=True)
-                st.header(":red[Ranquing]")
+                    # st.subheader(f"{st.session_state.df['elements'][i]} : {round(v,1)}",divider=True) # idem
+                st.header(":red[Rànquing]")
                 r2 = {}
                 p = 1
                 for key in sorted(r, key=r.get, reverse=True):
                     r2[key] = p
                     p+=1
-                    st.subheader(f'{p-1}: {key}',divider=True)
+                    st.subheader(f'{p-1}: {key} ({round(r[key],1)})',divider=True)
                                 
                 st.session_state.df['Puntuacio'] = r.values()
                 st.session_state.df["Posicio ranquing"] = st.session_state.df['elements'].map(r2)
@@ -233,7 +248,7 @@ def pantalla_metriques():
                 st.download_button(
                     label="Descarrega el CSV",
                     data=csv,
-                    file_name=f'{st.session_state.nom_ranking}.csv',
+                    file_name=f'{st.session_state.nom_ranquing}.csv',
                     mime='text/csv'
                 )
         
@@ -242,8 +257,8 @@ def main():
 
     if "page" not in st.session_state:
         st.session_state.page = "elements"
-    if "nom_ranking" not in st.session_state:
-        st.session_state.nom_ranking = "Ranking"
+    if "nom_ranquing" not in st.session_state:
+        st.session_state.nom_ranquing = "Ranquing"
     if "noms" not in st.session_state:
         st.session_state.noms = []
     if "df" not in st.session_state:
@@ -263,7 +278,7 @@ def main():
     # Primera pantalla: Nom del rànquing i nombre d'elements
     if st.session_state.page == "inici":
         st.title("Creació de Rànquing")
-        st.session_state.nom_ranking = st.text_input("Introdueix el Nom del rànquing:")
+        st.session_state.nom_ranquing = st.text_input("Introdueix el Nom del rànquing:")
         if st.button("Següent"):
             st.session_state.page = "elements"
 
