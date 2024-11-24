@@ -89,17 +89,17 @@ def pantalla_metriques():
             st.dataframe(st.session_state.df)
             st.session_state.new_col_values = [5] * len(st.session_state.df)
             
+            # EDITAR ELEMENTS
+            if st.button("Editar elements"):
+                st.session_state.page ="elements"
+            
+            # AFEGIR COLUMNA
             # Introdueix el nom de la nova columna
             st.session_state.new_col_name = st.text_input(
                 "Afegir la columna:",
                 value=st.session_state.new_col_name
             )
-            
-            # EDITAR ELEMENTS
-            if st.button("Editar elements"):
-                st.session_state.page ="elements"
-
-            # AFEGIR COLUMNA
+                        
             # Si s'ha proporcionat el nom, crea sliders per a cada fila
             if st.session_state.new_col_name:
                 st.write(f"Defineix els valors per a la nova columna: {st.session_state.new_col_name}")
