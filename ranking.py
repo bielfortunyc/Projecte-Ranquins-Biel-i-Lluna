@@ -27,11 +27,12 @@ def pantalla_inici():
     </style>
     """, unsafe_allow_html=True)
     
-    if st.button("Crear rànquing"): 
+    if st.button(r"$\textsf{Crear rànquing}$",
+        use_container_width=True, icon=":material/star:"): 
         st.session_state.nou_r = "Importar llista d'elements"
         st.session_state.page = "nom"
     
-    if st.button("Importar rànquing"):
+    if st.button(r"$\textsf{Importar rànquing}$",use_container_width=True,icon=":material/restart_alt:"):
         st.session_state.nou_r = "Importar rànquing"
         st.session_state.page = "elements"
         
@@ -57,7 +58,7 @@ def pantalla_elements():
             try:
                 # Llegir el fitxer CSV i carregar-lo com un dataframe
                 if st.session_state.nou_r != "Importar llista d'elements":
-                    st.session_state.nom_ranquing = uploaded_file.name
+                    st.session_state.nom_ranquing = uploaded_file.name[:-4]
                 df_upload = pd.read_csv(uploaded_file)
                 st.session_state.df = pd.concat(
                     [st.session_state.df, df_upload], ignore_index=True
