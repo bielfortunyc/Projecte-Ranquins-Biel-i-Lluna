@@ -66,6 +66,7 @@ def pantalla_elements():
                 st.session_state.uploaded = True
                 if 'pesos' in st.session_state.df['elements'].values:
                 # Guardar la fila com a diccionari dins de st.session_state.pesos
+                    
                     fila_pesos = st.session_state.df[st.session_state.df['elements'] == 'pesos']
                     st.session_state.pesos = fila_pesos.iloc[0].to_dict()
                     st.session_state.df = st.session_state.df[st.session_state.df["elements"] != "pesos"]
@@ -131,10 +132,10 @@ def pantalla_metriques():
     st.markdown(f"<h1 style='text-align: center; color: black;'>{st.session_state.nom_ranquing}</h1>", unsafe_allow_html=True)
     
     col1, col2 = st.columns(2, gap='large')
-
+    st.session_state.new_col_values = [5 for _ in st.session_state.df.iterrows()]
+    
     with col1:
         st.header(":blue[Editar les mètriques]")
-        st.session_state.new_col_values = [5] * len(st.session_state.df)
 
         # AFEGIR metrica
         # Introdueix el nom de la nova metrica
@@ -147,7 +148,8 @@ def pantalla_metriques():
             st.write(f"Defineix els valors per a la nova metrica: {st.session_state.new_col_name}")
 
             for idx, row in st.session_state.df.iterrows():
-                st.session_state.new_col_values[idx] = st.slider(
+                
+                st.session_state.new_col_values[idx-1] = st.slider(
                     label=f"Valor per a {row['elements']}",
                     min_value=0,
                     max_value=10,
