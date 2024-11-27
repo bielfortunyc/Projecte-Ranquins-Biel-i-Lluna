@@ -134,7 +134,8 @@ def pantalla_metriques():
 
     with col1:
         st.header(":blue[Editar les mètriques]")
-            
+        st.session_state.new_col_values = [5] * len(st.session_state.df)
+
         # AFEGIR metrica
         # Introdueix el nom de la nova metrica
         st.session_state.new_col_name = st.text_input(
@@ -265,7 +266,6 @@ def pantalla_metriques():
     with col2:
         st.header(":blue[Taula actual:]")
         st.dataframe(st.session_state.df)
-        st.session_state.new_col_values = [5] * len(st.session_state.df)
         # EDITAR ELEMENTS
         if st.button("Editar elements"):
             st.session_state.page ="elements"
