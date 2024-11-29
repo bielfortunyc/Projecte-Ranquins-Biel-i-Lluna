@@ -183,7 +183,7 @@ def pantalla_metriques():
             
             for idx, row in st.session_state.df.iterrows():
                 try:
-                    st.session_state.new_col_values[idx] = st.slider(
+                    st.session_state.new_col_values[idx-1] = st.slider(
                         label=f"Valor per a {row['elements']}",
                         min_value=0,
                         max_value=10,
@@ -192,7 +192,7 @@ def pantalla_metriques():
                         key=f"slidere_{idx}"
                     )
                 except:
-                    st.session_state.new_col_values[idx] = st.slider(
+                    st.session_state.new_col_values[idx-1] = st.slider(
                         label=f"Valor per a {row['elements']}",
                         min_value=0,
                         max_value=10,
@@ -217,8 +217,6 @@ def pantalla_metriques():
                 st.session_state.df.drop(columns=[column_to_delete], inplace=True)
                 st.success(f"La mètrica '{column_to_delete}' s'ha esborrat correctament!")
                 st.rerun()
-    
-    #st.subheader(":blue[Editar els pesos de les mètriques]")
     
         # EDITAR PESOS
         if not st.session_state.editing_pesos:
