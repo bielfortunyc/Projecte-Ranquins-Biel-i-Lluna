@@ -192,13 +192,13 @@ def pantalla_metriques():
                         key=f"slidere_{idx}"
                     )
                 except:
-                        st.session_state.new_col_values[idx] = st.slider(
+                    st.session_state.new_col_values[idx] = st.slider(
                         label=f"Valor per a {row['elements']}",
                         min_value=0,
                         max_value=10,
                         step=1,
                         value=5,
-                        key=f"slidere_{idx}"
+                        key=f"slidert_{idx}"
                     )
             if st.button("Editar mètrica"):
                 st.session_state.df[st.session_state.column_to_edit] = st.session_state.new_col_values
@@ -257,7 +257,7 @@ def pantalla_metriques():
                         max_value=1.0,
                         step=0.05,
                         value=0.0,
-                        key=f"slider_{i}"
+                        key=f"sliderf_{i}"
                     )
             # Botó per guardar els canvis i tornar a la vista inicial
             if st.button("Guardar pesos"):
